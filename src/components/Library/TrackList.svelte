@@ -25,7 +25,7 @@
 </script>
 
 <div class="w-full select-none cursor-default">
-	<table class="w-full text-left">
+	<table class="w-full text-left table-fixed">
 		{#if showHeader}
 			<thead
 				class="border-b border-white/10 top-0 bg-background z-10"
@@ -52,7 +52,7 @@
 		<tbody>
 			{#each tracks as track, i}
 				<tr
-					class="hover:bg-white/5 cursor-pointer group h-12 transition-colors rounded-lg"
+					class="hover:bg-white/5 cursor-pointer group h-1 transition-colors rounded-lg"
 					on:click={() => playTrack(track, i)}
 				>
 					<td
@@ -73,7 +73,7 @@
 					</td>
 					<td class="py-2 pl-2">
 						<div
-							class="flex items-center gap-3"
+							class="flex items-center truncate gap-3"
 						>
 							{#if (track.albumArt && !showHeader) || showCover}
 								<img
@@ -89,7 +89,7 @@
 					</td>
 					{#if showArtist}
 						<td
-							class="self-center align-middle hover:underline text-text-secondary"
+							class="self-center align-middle hover:underline truncate text-text-secondary"
 						>
 							<Link
 								to={`/artist/${track.artistId}`}
@@ -100,7 +100,7 @@
 					{/if}
 					{#if showAlbum}
 						<td
-							class="self-center align-middle hover:underline text-text-secondary"
+							class="self-center truncate align-middle hover:underline text-text-secondary"
 						>
 							<Link
 								to={`/album/${track.albumId}`}

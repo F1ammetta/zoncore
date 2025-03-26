@@ -1,6 +1,11 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import { getCoverArtUrl, search } from "../../lib/subsonicService";
+	import {
+		getCoverArtUrl,
+		search,
+		getSongArtistId,
+		getSongAlbumId,
+	} from "../../lib/subsonicService";
 	import { Link } from "svelte-routing";
 	import TrackList from "./TrackList.svelte";
 	import type { AlbumID3, ArtistID3, Child } from "subsonic-api";
@@ -31,17 +36,24 @@
 		} catch (error) {
 			console.error("Search error:", error);
 		} finally {
-			results.songs = results.songs.map((song: any) => ({
-				id: song.id,
-				title: song.title,
-				artist: song.artist,
-				album: song.album,
-				// Use getCoverArtUrl to form the URL dynamically.
-				albumArt: song.coverArt
-					? getCoverArtUrl(song.coverArt)
-					: null,
-				duration: song.duration,
-			}));
+			results.songs = results.songs.map(
+				async (song: any) => ({
+					id: song.id,
+					title: song.title,
+					artist: song.artist,
+					album: song.album,
+					artistId: await getSongArtistId(
+						song.id,
+					),
+					albumId: await getSongAlbumId(song.id),
+					// Use getCoverArtUrl to form the URL dynamically.
+					albumArt: song.coverArt
+						? getCoverArtUrl(song.coverArt)
+						: null,
+					duration: song.duration,
+				}),
+			);
+			results.songs = await Promise.all(results.songs);
 			loading = false;
 		}
 	}

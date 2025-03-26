@@ -1,8 +1,14 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import { getAlbum, getCoverArtUrl } from "../../lib/subsonicService";
+	import {
+		getAlbum,
+		getCoverArtUrl,
+		star,
+		unstar,
+	} from "../../lib/subsonicService";
 	import TrackList from "./TrackList.svelte";
 	import { playerStore } from "../../stores/playerStore";
+	import { Link } from "svelte-routing";
 
 	export let albumId: string;
 
@@ -10,6 +16,16 @@
 	let tracks: any[] = [];
 	let loading = true;
 	let error = "";
+
+	let isFav = false;
+
+	async function toggleFav() {
+		if (isFav) {
+			isFav = !(await unstar(albumId, "album"));
+		} else {
+			isFav = await star(albumId, "album");
+		}
+	}
 
 	async function loadAlbum() {
 		loading = true;
@@ -25,6 +41,7 @@
 					albumData.song &&
 					Array.isArray(albumData.song)
 				) {
+					isFav = !!albumData.starred;
 					tracks = albumData.song.map(
 						(song: any) => ({
 							id: song.id,
@@ -92,7 +109,11 @@
 			<h1 class="text-4xl font-bold mb-2">
 				{album.name}
 			</h1>
-			<p class="text-xl mb-2">{album.artist}</p>
+			<Link to={`/artist/${album.artistId}`}
+				><p class="text-xl mb-2">
+					{album.artist}
+				</p></Link
+			>
 			<div class="text-text-secondary mb-4">
 				<span>{album.year}</span>
 				<span class="mx-1">•</span>
@@ -105,35 +126,41 @@
 				{/if}
 			</div>
 
-			<div class="flex gap-4 mt-4">
+			<div class="flex gap-4">
 				<button
-					class="btn-primary flex items-center gap-2"
+					class="btn-primary play flex items-center gap-2 cursor-pointer mr-6 text-center align-middle justify-center aspect-square rounded-full"
 					on:click={playAlbum}
+					aria-label="play"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
-						width="20"
-						height="20"
-						fill="currentColor"
+						width="40"
+						height="40"
+						fill="#040614ff"
 						viewBox="0 0 16 16"
 					>
 						<path
 							d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"
 						/>
 					</svg>
-					Play
 				</button>
 
-				<button class="btn-secondary text-text-primary">
+				<button
+					class="btn-secondary fav text-text-primary"
+					aria-label="fav"
+					on:click={toggleFav}
+				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
-						width="20"
-						height="20"
+						width="32"
+						height="32"
 						fill="currentColor"
 						viewBox="0 0 16 16"
 					>
 						<path
-							d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"
+							d={isFav
+								? "M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 2.562-3.248 8 1.314z"
+								: "M8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"}
 						/>
 					</svg>
 				</button>
@@ -153,3 +180,26 @@
 		</p>
 	</div>
 {/if}
+
+<style>
+	.play {
+		background: cyan;
+		width: 3.75rem;
+		transition:
+			transform 0.2s ease-in,
+			background 0.2s ease-in;
+	}
+
+	.play:hover {
+		transform: scale(1.1); /* Scale the button visually */
+	}
+	.fav {
+		transition:
+			transform 0.2s ease-in,
+			background 0.2s ease-in;
+	}
+
+	.fav:hover {
+		transform: scale(1.2); /* Scale the button visually */
+	}
+</style>
