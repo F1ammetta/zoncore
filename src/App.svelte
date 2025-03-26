@@ -8,6 +8,7 @@
   import ArtistView from "./components/Library/ArtistView.svelte";
   import Layout from "./components/Layout/Layout.svelte";
   import SearchView from "./components/Library/SearchView.svelte";
+  import AlbumsView from "./components/Library/AlbumsView.svelte";
 
   let currentVolume = 0.5;
 
@@ -37,9 +38,10 @@
   });
 
   window.addEventListener("keydown", (e) => {
-    console.log(e.key);
     switch (e.key) {
       case " ":
+        togglePlay();
+      case "k":
         togglePlay();
     }
   });
@@ -57,6 +59,9 @@
       </Route>
       <Route path="/playlist/:id" let:params>
         <PlaylistView playlistId={params.id} />
+      </Route>
+      <Route path="/albums" let:params>
+        <AlbumsView />
       </Route>
       <Route path="/search" component={SearchView} />
       <Route path="/search/:query" let:params>
