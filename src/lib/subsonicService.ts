@@ -8,6 +8,26 @@ export interface SubsonicSettings {
   useSalt?: boolean;
 }
 
+export const sorts = [
+  "alphabeticalByName",
+  "alphabeticalByArtist",
+  "frequent",
+  "recent",
+  "newest",
+  "highest",
+  "random",
+];
+
+export const sortOptions = [
+  "Name",
+  "Artist",
+  "Frequently Played",
+  "Recently Played",
+  "Newest",
+  "Highest Rated",
+  "Random",
+];
+
 // Persistent settings store
 export const subsonicSettings = writable<SubsonicSettings | null>(
   JSON.parse(localStorage.getItem('subsonicSettings') || 'null')
@@ -133,10 +153,51 @@ export async function getRandomSongs(size = 20) {
   return response?.randomSongs?.song || [];
 }
 
+export async function getSongArtistId(id: string) {
+  const api = getApi();
+  const response = await api?.getSong({ id });
+  return response?.song.artistId!;
+}
+
+export async function getSongAlbumId(id: string) {
+  const api = getApi();
+  const response = await api?.getSong({ id });
+  return response?.song.albumId!;
+}
+
 export async function getTopSongs(artist: string) {
   const api = getApi();
   const response = await api?.getTopSongs({ artist: artist });
   return response?.topSongs.song;
+}
+
+// --- General Methods ---
+export async function getStarred() {
+  const api = getApi();
+  const response = await api?.getStarred2();
+  return response?.starred2!;
+}
+
+export async function star(id: string, type: "song" | "album" | "artist") {
+  const api = getApi();
+  const response = await api?.star({
+    id: (type == "song" ? id : undefined),
+    albumId: (type == "album" ? id : undefined),
+    artistId: (type == "artist" ? id : undefined),
+  }
+  );
+  return !!response;
+}
+
+export async function unstar(id: string, type: "song" | "album" | "artist") {
+  const api = getApi();
+  const response = await api?.unstar({
+    id: (type == "song" ? id : undefined),
+    albumId: (type == "album" ? id : undefined),
+    artistId: (type == "artist" ? id : undefined),
+  }
+  );
+  return !!response;
 }
 
 // --- URL Helpers ---
