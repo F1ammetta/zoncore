@@ -5,6 +5,7 @@
 		connectionError,
 		testConnection,
 		getPlaylists,
+		getCoverArtUrl,
 	} from "../../lib/subsonicService";
 	import { Link } from "svelte-routing";
 
@@ -123,13 +124,50 @@
 					<Link
 						to="/"
 						class="flex items-center gap-3 text-text-secondary
-                   hover:text-text-primary py-2 transition-colors"
+						p-2 rounded-lg hover:bg-white/5
+						       						hover:text-text-primary py-2 transition-colors"
 					>
 						<span
 							class="material-symbols-outlined"
 							>Home</span
 						>
 						Home
+					</Link>
+					<Link
+						to="/albums"
+						class="flex items-center gap-3 text-text-secondary
+						p-2 rounded-lg hover:bg-white/5
+						       						hover:text-text-primary py-2 transition-colors"
+					>
+						<span
+							class="material-symbols-outlined"
+							>Album</span
+						>
+						Albums
+					</Link>
+					<Link
+						to="/songs"
+						class="flex items-center gap-3 text-text-secondary
+						p-2 rounded-lg hover:bg-white/5
+						       						hover:text-text-primary py-2 transition-colors"
+					>
+						<span
+							class="material-symbols-outlined"
+							>Music_Note</span
+						>
+						Songs
+					</Link>
+					<Link
+						to="/artists"
+						class="flex items-center gap-3 text-text-secondary
+						p-2 rounded-lg hover:bg-white/5
+							hover:text-text-primary py-2 transition-colors"
+					>
+						<span
+							class="material-symbols-outlined"
+							>Person</span
+						>
+						Artists
 					</Link>
 				</li>
 				<li></li>
@@ -147,9 +185,20 @@
 			{#each playlists as playlist}
 				<Link
 					to={`/playlist/${playlist.id}`}
-					class="text-text-secondary hover:text-text-primary block py-2 transition-colors truncate"
+					class="text-text-secondary w-50 p-2 rounded-lg hover:bg-white/5 hover:text-text-primary block py-2 transition-colors truncate"
 				>
-					{playlist.name.trim()}
+					<div
+						class="flex flex-row items-center gap-3 overflow-hidden"
+					>
+						<img
+							src={getCoverArtUrl(
+								playlist.id,
+							)}
+							alt="Playlist art"
+							class="w-10 h-10 rounded shadow"
+						/>
+						{playlist.name.trim()}
+					</div>
 				</Link>
 			{/each}
 		{:else if $connectionStatus === "connected"}
